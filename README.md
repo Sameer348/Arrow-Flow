@@ -1,8 +1,64 @@
-# Arrow Flow
+<p align="center">
+  <img src="store/google_play/feature_graphic_1024x500.png" alt="Arrow Flow feature graphic" width="100%">
+</p>
 
-An original arrow-escape puzzle game for iOS and Android, built with Flutter. Tap an arrow whose path is clear and it flies off the board. Clear every arrow to win.
+<h1 align="center">
+  <img src="store/branding/app_icon_1024.png" alt="" width="40" align="center">
+  Arrow Flow: Arrow Puzzle
+</h1>
 
-The name, logo, palette, art, sounds and levels are all original. The game takes only the general genre mechanic from other arrow-escape games. To rename it, edit `lib/core/constants/app_info.dart`.
+<p align="center">
+  <b>Tap. Escape. Clear the board.</b><br>
+  An original arrow-escape logic puzzle for Android and iOS, built with Flutter.
+</p>
+
+<p align="center">
+  Flutter 3.47 · Dart 3.13 · Android + iOS · Package <code>com.qurat.arrowpuzzle.game</code>
+</p>
+
+---
+
+## About the game
+
+Every arrow points in one direction. An arrow can leave the board only when nothing stands in its path. Find the arrow that's free, tap it, and watch it fly away. Each escape opens new paths until the whole board is clear.
+
+- **Rules:** easy to learn in seconds, with 1,200+ levels that get harder as you go.
+- **Every board is solvable:** a solver checks every level.
+- **Feel:** smooth arrow flights, glowing trails, particle sparks, haptics and soft sound.
+- **Offline:** everything works without internet. Only the ads need a connection.
+
+The name, logo, palette, art, sounds and levels are all original. The game shares only the general mechanic of the arrow-escape genre. To rename it, edit `lib/core/constants/app_info.dart`.
+
+## Screenshots
+
+| Gameplay | Combos | Daily Challenge | Tower 2.5D |
+|:---:|:---:|:---:|:---:|
+| <img src="store/google_play/screenshots/01_game47.png" width="200"> | <img src="store/google_play/screenshots/02_game_combo.png" width="200"> | <img src="store/google_play/screenshots/03_daily_board.png" width="200"> | <img src="store/google_play/screenshots/04_tower.png" width="200"> |
+| **Level Complete** | **Level Map** | **Skins & Themes** | **Boosters** |
+| <img src="store/google_play/screenshots/05_complete.png" width="200"> | <img src="store/google_play/screenshots/06_map.png" width="200"> | <img src="store/google_play/screenshots/07_skins.png" width="200"> | <img src="store/google_play/screenshots/08_boosters.png" width="200"> |
+
+<details>
+<summary>Raw in-game captures (iPhone 17 Pro Max)</summary>
+
+| Home | Daily | Expert board | Shop |
+|:---:|:---:|:---:|:---:|
+| <img src="store/raw_screenshots/home.png" width="180"> | <img src="store/raw_screenshots/daily.png" width="180"> | <img src="store/raw_screenshots/game47.png" width="180"> | <img src="store/raw_screenshots/skins.png" width="180"> |
+
+</details>
+
+## Store assets
+
+| Asset | Size | Path |
+|---|---|---|
+| App icon (App Store) | 1024×1024 | `store/branding/app_icon_1024.png` |
+| Play Store icon | 512×512 | `store/branding/play_store_icon_512.png` |
+| Feature graphic | 1024×500 | `store/google_play/feature_graphic_1024x500.png` |
+| Play screenshots | 1080×1920 ×8 | `store/google_play/screenshots/` |
+| App Store 6.9" screenshots | 1320×2868 ×8 | `store/app_store/screenshots_6.9/` |
+| App Store 6.5" screenshots | 1284×2778 ×8 | `store/app_store/screenshots_6.5/` |
+| Listing text, categories, privacy answers | | [`store/STORE_LISTING.md`](store/STORE_LISTING.md) |
+
+**Categories:** Google Play is Game › Puzzle. App Store is Games › Puzzle, with Games › Casual as secondary. Age rating is Everyone / 4+.
 
 ## Run
 
