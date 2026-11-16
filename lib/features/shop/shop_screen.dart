@@ -375,16 +375,16 @@ class _CosmeticCard extends StatelessWidget {
             child: ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: SizedBox.expand(child: preview)),
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(name, style: AppTextStyles.subheading),
+          Text(name, style: AppTextStyles.subheading, maxLines: 1, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 2),
-          Text(rarity.label, style: AppTextStyles.caption.copyWith(color: rarity.color, fontSize: 11)),
+          Text(rarity.label, style: AppTextStyles.caption.copyWith(color: rarity.color, fontSize: 11), maxLines: 1),
           const SizedBox(height: AppSpacing.xs),
           SizedBox(
             height: 30,
             child: selected
                 ? const TagChip(label: 'Equipped', color: AppColors.primary, icon: Icons.check_rounded)
                 : owned
-                    ? const TagChip(label: 'Owned · Tap to use', color: AppColors.success)
+                    ? const TagChip(label: 'Tap to use', color: AppColors.success, icon: Icons.check_circle_outline_rounded)
                     : Row(mainAxisSize: MainAxisSize.min, children: [
                         const CoinIcon(size: 18),
                         const SizedBox(width: 6),

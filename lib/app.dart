@@ -9,6 +9,13 @@ import 'services/app_services.dart';
 class ArrowFlowApp extends StatefulWidget {
   const ArrowFlowApp({super.key});
 
+  /// Keeps text readable but stops huge system fonts from breaking layout.
+  static Widget clampText(Widget child) => Builder(builder: (context) {
+        final mq = MediaQuery.of(context);
+        final scaler = mq.textScaler.clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
+        return MediaQuery(data: mq.copyWith(textScaler: scaler), child: child);
+      });
+
   @override
   State<ArrowFlowApp> createState() => _ArrowFlowAppState();
 }
@@ -44,12 +51,7 @@ class _ArrowFlowAppState extends State<ArrowFlowApp> with WidgetsBindingObserver
       theme: AppTheme.dark,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      builder: (context, child) {
-        // Keep text readable but stop huge system fonts from breaking layout.
-        final mq = MediaQuery.of(context);
-        final scaler = mq.textScaler.clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
-        return MediaQuery(data: mq.copyWith(textScaler: scaler), child: child!);
-      },
+      builder: (context, child) => ArrowFlowApp.clampText(child!),
       home: const HomeScreen(),
     );
   }

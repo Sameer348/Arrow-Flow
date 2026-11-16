@@ -22,8 +22,8 @@ class AchievementsScreen extends StatelessWidget {
       title: 'Achievements',
       child: ListView(padding: const EdgeInsets.all(AppSpacing.md), children: [
         Row(children: [
-          Text('$unlocked / ${Achievement.all.length} unlocked', style: AppTextStyles.label),
-          const Spacer(),
+          Expanded(child: Text('$unlocked / ${Achievement.all.length} unlocked', style: AppTextStyles.label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          const SizedBox(width: AppSpacing.sm),
           SizedBox(
             width: 120,
             child: ClipRRect(

@@ -39,15 +39,24 @@ class _OverlayShell extends StatelessWidget {
           ),
         ),
       ]),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: GlassPanel(
-            color: AppColors.surface.withValues(alpha: 0.92),
-            radius: AppRadius.xl,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: child,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: LayoutBuilder(
+            // Fixed design width, then scaled down as a whole if the screen
+            // is too short, so nothing ever clips or overflows.
+            builder: (context, c) => FittedBox(
+              fit: BoxFit.scaleDown,
+              child: SizedBox(
+                width: c.maxWidth.clamp(0.0, 400.0),
+                child: GlassPanel(
+                  color: AppColors.surface.withValues(alpha: 0.92),
+                  radius: AppRadius.xl,
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: child,
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -180,7 +189,7 @@ class _LevelCompleteOverlayState extends State<LevelCompleteOverlay> with Single
                   Text('+${(widget.reward.coins * seg(0.7, 0.95)).round()}', style: AppTextStyles.heading.copyWith(color: AppColors.warning)),
                   if (r.perfect) ...[
                     const SizedBox(width: 12),
-                    const TagChip(label: 'Perfect', color: AppColors.violet, icon: Icons.verified_rounded),
+                    const Flexible(child: TagChip(label: 'Perfect', color: AppColors.violet, icon: Icons.verified_rounded)),
                   ],
                 ]),
               ]),
@@ -218,12 +227,17 @@ class _Metric extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext context) => Column(children: [
-        Icon(icon, size: 20, color: AppColors.textMuted),
-        const SizedBox(height: 4),
-        Text(value, style: AppTextStyles.subheading),
-        Text(label, style: AppTextStyles.caption),
-      ]);
+  Widget build(BuildContext context) => Expanded(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(children: [
+            Icon(icon, size: 20, color: AppColors.textMuted),
+            const SizedBox(height: 4),
+            Text(value, style: AppTextStyles.subheading),
+            Text(label, style: AppTextStyles.caption),
+          ]),
+        ),
+      );
 }
 
 class GameOverOverlay extends StatelessWidget {

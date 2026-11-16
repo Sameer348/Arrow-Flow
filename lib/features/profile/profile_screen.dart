@@ -121,10 +121,14 @@ class ProfileScreen extends StatelessWidget {
                     Icon(icon, color: color, size: 26),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
-                      child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        FittedBox(child: Text(value, style: AppTextStyles.heading)),
-                        Text(label, style: AppTextStyles.caption),
-                      ]),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(value, style: AppTextStyles.heading),
+                          Text(label, style: AppTextStyles.caption),
+                        ]),
+                      ),
                     ),
                   ]),
                 ),

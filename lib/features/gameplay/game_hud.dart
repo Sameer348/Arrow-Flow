@@ -33,7 +33,7 @@ class GameHud extends StatelessWidget {
                 Row(children: [
                   Flexible(child: Text(title, style: AppTextStyles.subheading, maxLines: 1, overflow: TextOverflow.ellipsis)),
                   const SizedBox(width: 8),
-                  TagChip(label: session.level.difficulty.label, color: _diffColor(session.level.difficulty)),
+                  Flexible(child: TagChip(label: session.level.difficulty.label, color: _diffColor(session.level.difficulty))),
                 ]),
                 const SizedBox(height: 6),
                 _ProgressBar(value: session.progress),
@@ -44,22 +44,40 @@ class GameHud extends StatelessWidget {
           ]),
           const SizedBox(height: AppSpacing.sm),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            _Stat(label: 'SCORE', child: TweenAnimationBuilder<double>(
-              tween: Tween(end: session.score.toDouble()),
-              duration: const Duration(milliseconds: 350),
-              builder: (_, v, _) => Text('${v.round()}', style: AppTextStyles.score),
-            )),
-            if (session.timeRemaining != null) _TimerPill(session: session),
-            if (session.movesLeft != null)
-              _Pill(
-                icon: Icons.touch_app_rounded,
-                text: '${session.movesLeft} moves',
-                color: session.movesLeft! <= 3 ? AppColors.error : AppColors.warning,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: _Stat(label: 'SCORE', child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: session.score.toDouble()),
+                  duration: const Duration(milliseconds: 350),
+                  builder: (_, v, _) => Text('${v.round()}', style: AppTextStyles.score),
+                )),
               ),
-            _Stat(
-              label: 'ARROWS',
-              alignEnd: true,
-              child: Text('${session.board.count}', style: AppTextStyles.score.copyWith(color: AppColors.textSecondary)),
+            ),
+            if (session.timeRemaining != null)
+              Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: _TimerPill(session: session))),
+            if (session.movesLeft != null)
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: _Pill(
+                    icon: Icons.touch_app_rounded,
+                    text: '${session.movesLeft} moves',
+                    color: session.movesLeft! <= 3 ? AppColors.error : AppColors.warning,
+                  ),
+                ),
+              ),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: _Stat(
+                  label: 'ARROWS',
+                  alignEnd: true,
+                  child: Text('${session.board.count}', style: AppTextStyles.score.copyWith(color: AppColors.textSecondary)),
+                ),
+              ),
             ),
           ]),
         ]),

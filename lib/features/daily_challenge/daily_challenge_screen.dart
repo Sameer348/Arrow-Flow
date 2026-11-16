@@ -88,11 +88,16 @@ class _Info extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) => Column(children: [
-        Text(value, style: AppTextStyles.subheading.copyWith(color: color)),
-        const SizedBox(height: 2),
-        Text(label, style: AppTextStyles.caption),
-      ]);
+  Widget build(BuildContext context) => Expanded(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(children: [
+            Text(value, style: AppTextStyles.subheading.copyWith(color: color)),
+            const SizedBox(height: 2),
+            Text(label, style: AppTextStyles.caption),
+          ]),
+        ),
+      );
 }
 
 class _HistoryRow extends StatelessWidget {

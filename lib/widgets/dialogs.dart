@@ -25,23 +25,25 @@ Future<T?> showAppDialog<T>(BuildContext context, WidgetBuilder builder, {bool d
     pageBuilder: (ctx, _, _) => builder(ctx),
     transitionBuilder: (ctx, anim, _, child) {
       final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutBack, reverseCurve: Curves.easeIn);
-      return Stack(children: [
-        Positioned.fill(
-          child: FadeTransition(
-            opacity: anim,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: const ColoredBox(color: AppColors.scrim),
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: FadeTransition(
+              opacity: anim,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: const ColoredBox(color: AppColors.scrim),
+              ),
             ),
           ),
-        ),
-        Center(
-          child: FadeTransition(
-            opacity: anim,
-            child: ScaleTransition(scale: Tween(begin: 0.88, end: 1.0).animate(curved), child: child),
+          Center(
+            child: FadeTransition(
+              opacity: anim,
+              child: ScaleTransition(scale: Tween(begin: 0.88, end: 1.0).animate(curved), child: child),
+            ),
           ),
-        ),
-      ]);
+        ],
+      );
     },
   );
 }
@@ -66,44 +68,56 @@ class AppDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = math.min(MediaQuery.sizeOf(context).width - 48, 380.0);
+    final screen = MediaQuery.sizeOf(context);
+    final width = math.min(screen.width - 48, 380.0);
     return Material(
       type: MaterialType.transparency,
-      child: SizedBox(
-        width: width,
-        child: GlassPanel(
-          color: AppColors.surface.withValues(alpha: 0.96),
-          radius: AppRadius.xl,
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.md),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            if (icon != null) ...[
-              Container(
-                width: 68,
-                height: 68,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: iconColor.withValues(alpha: 0.14),
-                  border: Border.all(color: iconColor.withValues(alpha: 0.35)),
-                  boxShadow: [BoxShadow(color: iconColor.withValues(alpha: 0.3), blurRadius: 24)],
-                ),
-                child: Icon(icon, color: iconColor, size: 34),
+      // Laid out at a fixed width, then scaled down as a whole if the screen
+      // is too short, so the whole dialog (and its buttons) stays visible.
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: screen.height - MediaQuery.paddingOf(context).vertical - 32),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: SizedBox(
+            width: width,
+            child: GlassPanel(
+              color: AppColors.surface.withValues(alpha: 0.96),
+              radius: AppRadius.xl,
+              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.md),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: iconColor.withValues(alpha: 0.14),
+                        border: Border.all(color: iconColor.withValues(alpha: 0.35)),
+                        boxShadow: [BoxShadow(color: iconColor.withValues(alpha: 0.3), blurRadius: 24)],
+                      ),
+                      child: Icon(icon, color: iconColor, size: 34),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  Text(title, textAlign: TextAlign.center, style: AppTextStyles.heading),
+                  if (message != null) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(message!, textAlign: TextAlign.center, style: AppTextStyles.body),
+                  ],
+                  if (content != null) ...[const SizedBox(height: AppSpacing.md), content!],
+                  if (actions.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    for (var i = 0; i < actions.length; i++) ...[
+                      actions[i],
+                      if (i < actions.length - 1) const SizedBox(height: AppSpacing.xs),
+                    ],
+                  ],
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            Text(title, textAlign: TextAlign.center, style: AppTextStyles.heading),
-            if (message != null) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Text(message!, textAlign: TextAlign.center, style: AppTextStyles.body),
-            ],
-            if (content != null) ...[const SizedBox(height: AppSpacing.md), content!],
-            if (actions.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              for (var i = 0; i < actions.length; i++) ...[
-                actions[i],
-                if (i < actions.length - 1) const SizedBox(height: AppSpacing.xs),
-              ],
-            ],
-          ]),
+            ),
+          ),
         ),
       ),
     );
@@ -173,7 +187,11 @@ Future<bool> rewardedFlow(
   if (watch != true || !context.mounted) return false;
   final ads = context.services.ads;
   if (!ads.ready) {
-    context.toast('No video available right now. Try again later.', icon: Icons.wifi_off_rounded, color: AppColors.textSecondary);
+    context.toast(
+      'No video available right now. Try again later.',
+      icon: Icons.wifi_off_rounded,
+      color: AppColors.textSecondary,
+    );
     return false;
   }
   final earned = await ads.showRewarded(placement: placement);
@@ -181,7 +199,11 @@ Future<bool> rewardedFlow(
   if (earned) {
     showRewardPopup(context, '+$rewardLabel', icon);
   } else {
-    context.toast('Video not completed — no reward this time.', icon: Icons.info_rounded, color: AppColors.textSecondary);
+    context.toast(
+      'Video not completed — no reward this time.',
+      icon: Icons.info_rounded,
+      color: AppColors.textSecondary,
+    );
   }
   return earned;
 }
@@ -216,11 +238,14 @@ void showRewardPopup(BuildContext context, String label, IconData icon, {Color c
               color: AppColors.surfaceElevated.withValues(alpha: 0.95),
               glow: color,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(icon, color: color),
-                const SizedBox(width: 10),
-                Text(label, style: AppTextStyles.heading.copyWith(color: color)),
-              ]),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: color),
+                  const SizedBox(width: 10),
+                  Text(label, style: AppTextStyles.heading.copyWith(color: color)),
+                ],
+              ),
             ),
           ),
         ),
@@ -239,17 +264,22 @@ Future<void> showAchievementUnlocked(BuildContext context, Achievement a) {
     (ctx) => AppDialog(
       title: 'Achievement Unlocked',
       message: a.title,
-      content: Column(children: [
-        _AchievementBadge(icon: a.icon),
-        const SizedBox(height: AppSpacing.sm),
-        Text(a.description, textAlign: TextAlign.center, style: AppTextStyles.caption),
-        const SizedBox(height: AppSpacing.sm),
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          const CoinIcon(size: 20),
-          const SizedBox(width: 6),
-          Text('+${a.reward}', style: AppTextStyles.subheading.copyWith(color: AppColors.warning)),
-        ]),
-      ]),
+      content: Column(
+        children: [
+          _AchievementBadge(icon: a.icon),
+          const SizedBox(height: AppSpacing.sm),
+          Text(a.description, textAlign: TextAlign.center, style: AppTextStyles.caption),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CoinIcon(size: 20),
+              const SizedBox(width: 6),
+              Text('+${a.reward}', style: AppTextStyles.subheading.copyWith(color: AppColors.warning)),
+            ],
+          ),
+        ],
+      ),
       actions: [PrimaryButton(label: 'Awesome', height: 50, onTap: () => Navigator.pop(ctx))],
     ),
   );
@@ -264,7 +294,8 @@ class _AchievementBadge extends StatefulWidget {
 }
 
 class _AchievementBadgeState extends State<_AchievementBadge> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))..forward();
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
+    ..forward();
 
   @override
   void dispose() {
