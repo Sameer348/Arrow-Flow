@@ -7,6 +7,7 @@ import '../analytics/analytics_service.dart';
 import 'ad_config.dart';
 import 'ad_frequency_manager.dart';
 import 'consent_service.dart';
+import 'tracking_service.dart';
 
 /// Owns interstitial + rewarded lifecycles. Every method is failure-safe:
 /// if ads can't load (offline, no fill, init error) the game simply
@@ -16,11 +17,14 @@ class AdMobService extends ChangeNotifier {
     required ConsentService consent,
     required AnalyticsService analytics,
     AdFrequencyManager? frequency,
-  })  : _consent = consent, // ignore: prefer_initializing_formals
+    TrackingService? tracking,
+  })  : _tracking = tracking ?? TrackingService(),
+        _consent = consent, // ignore: prefer_initializing_formals
         _analytics = analytics, // ignore: prefer_initializing_formals
         frequency = frequency ?? AdFrequencyManager();
 
   final ConsentService _consent;
+  final TrackingService _tracking;
   final AnalyticsService _analytics;
   final AdFrequencyManager frequency;
 
@@ -57,7 +61,12 @@ class AdMobService extends ChangeNotifier {
     if (kIsWeb || !AdConfig.supportedPlatform) return;
     try {
       _canRequest = await _consent.gatherConsent();
+      debugPrint('Ads: consent allows requests = $_canRequest');
       if (!_canRequest) return;
+      // iOS: Apple's tracking prompt after the consent form, before the SDK
+      // starts. Ads still work if the player declines (non-personalised IDs).
+      final tracking = await _tracking.requestIfNeeded();
+      debugPrint('Ads: tracking status = $tracking');
       await MobileAds.instance.initialize();
       _initialized = true;
       notifyListeners();

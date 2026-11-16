@@ -19,22 +19,34 @@ abstract class ConsentService {
 class UmpConsentService implements ConsentService {
   @override
   Future<bool> gatherConsent() async {
-    final done = Completer<void>();
     try {
+      // 1. Ask Google whether a form is needed. Only this network step has a
+      //    short timeout, so a slow connection can't hold up the game.
+      final info = Completer<bool>();
       ConsentInformation.instance.requestConsentInfoUpdate(
         ConsentRequestParameters(),
-        () async {
-          await ConsentForm.loadAndShowConsentFormIfRequired((FormError? e) {
-            if (e != null) debugPrint('Consent form: ${e.message}');
-            if (!done.isCompleted) done.complete();
-          });
+        () {
+          if (!info.isCompleted) info.complete(true);
         },
         (FormError e) {
           debugPrint('Consent update failed: ${e.message}');
-          if (!done.isCompleted) done.complete();
+          if (!info.isCompleted) info.complete(false);
         },
       );
-      await done.future.timeout(const Duration(seconds: 10), onTimeout: () {});
+      final updated = await info.future.timeout(const Duration(seconds: 10), onTimeout: () => false);
+
+      // 2. Show the form (GDPR / US states / Apple tracking explainer) and
+      //    wait for the player to finish it. No short timeout here: reading
+      //    the form takes as long as it takes.
+      if (updated) {
+        final form = Completer<void>();
+        await ConsentForm.loadAndShowConsentFormIfRequired((FormError? e) {
+          if (e != null) debugPrint('Consent form: ${e.message}');
+          if (!form.isCompleted) form.complete();
+        });
+        await form.future.timeout(const Duration(minutes: 10), onTimeout: () {});
+      }
+      // Previously stored consent still counts if the update timed out.
       return await ConsentInformation.instance.canRequestAds();
     } on Object catch (e) {
       debugPrint('Consent unavailable: $e');
